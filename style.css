@@ -1,0 +1,51 @@
+.products-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  /* Если нужно центрирование сетки, добавьте justify-content: center; */
+  margin: 0 -10px; /* Компенсация отступов для аккуратных краев */
+}
+
+/* Стиль для каждой карточки товара - ОБНОВЛЕННЫЙ */
+.product {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  /* Изменяем на flex-basis вместо фиксированного max-width */
+  flex: 1 1 calc(33.333% - 20px);
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  transition: box-shadow 0.3s, transform 0.3s;
+  /* Убедитесь, что нет max-width ограничивающего 3 колонки */
+  /* max-width: calc(33.333% - 20px); Удалите или закомментируйте эту строку */
+  box-sizing: border-box; /* Важно для правильного расчета размеров */
+}
+
+.product:hover {
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  transform: translateY(-5px);
+}
+
+/* Обновление изображений внутри карточек */
+.product img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  flex-shrink: 0; /* Чтобы изображение не сжималось */
+}
+
+/* Опционально: Адаптивность для мобильных устройств */
+@media (max-width: 1024px) {
+  .product {
+    flex: 1 1 calc(50% - 20px); /* 2 колонки на планшетах */
+  }
+}
+
+@media (max-width: 768px) {
+  .product {
+    flex: 1 1 100%; /* 1 колонка на мобильных */
+  }
+}

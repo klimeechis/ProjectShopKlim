@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+ <html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Интернет-магазин вещей</title>
+<!-- Шрифты для стильного вида -->
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+  /* Общие стили */
+  body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f7;
+    color: #333;
+  }
+
+  /* хедер */
+  header {
+    background: #fff;
+    padding: 30px 20px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  header h1 {
+    font-weight: 700;
+    font-size: 3rem;
+    margin-bottom: 50px;
+    color: #222;
+  }
+
+  header p {
+    font-size: 1rem;
+    color: #555;
+  }
+
+  /* сетка товаров */
+#product-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 равные колонки */
+    gap: 30px;
+    padding: 30px 20px;
+    justify-content: center;
+}
+
+/* карточка продукта */
+.product {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    transition: box-shadow 0.3s, transform 0.3s;
+    /* Удаляем flex-свойства, т.к. теперь используем Grid */
+    /* flex: 1 1 calc(33.333% - 20px); */
+    /* max-width: calc(33.333% - 20px); */
+    box-sizing: border-box; /* Важно: учитываем padding в ширине */
+}
+
+  .product:hover {
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    transform: translateY(-4px);
+  }
+
+  /* фото продукта */
+  .product img {
+    width: 100%;
+    height: auto;
+    border-radius: 15px;
+    object-fit: cover;
+    margin-bottom: 30px;
+    max-height: 350px;
+  }
+
+  /* имя продукта */
+  .product h2 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin: 0 0 10px 0;
+    color: #111;
+  }
+
+  /* описание */
+  .product p {
+    margin: 0 0 8px 0;
+    font-size: 0.95rem;
+    color: #555;
+  }
+
+  /* цена */
+  .price {
+    font-weight: 700;
+    color: #222;
+    font-size: 1.1rem;
+    margin-top: 10px;
+  }
+
+  /* кнопка */
+  button {
+    margin-top: 15px;
+    padding: 12px 20px;
+    background-color: #007aff; /* Apple-стиль голубая кнопка */
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+  }
+
+  button:hover {
+    background-color: #005bb5;
+    transform: scale(1.02);
+  }
+
+  /* детали продукта */
+  .product-details {
+    overflow: hidden;
+    max-height: 0;
+    margin-top: 10px;
+    background-color: #f0f0f5;
+    padding: 0 15px;
+    border-radius: 8px;
+    transition: max-height 0.4s ease, padding 0.4s ease;
+    font-size: 0.9rem;
+    color: #444;
+  }
+
+  /* активное состояние */
+  .product-details.show {
+    max-height: 200px;
+    padding: 10px 15px;
+  }
+
+  /* адаптив для мобильных */
+  @media(max-width: 1000px){
+    .product {
+      width: calc(50% - 30px);
+    }
+  }
+
+  @media(max-width: 600px){
+    #product-list {
+      flex-direction: column;
+      align-items: center;
+    }
+    .product {
+      width: 90%;
+    }
+  }
+
+  /*подвал*/
+  footer {
+    background: #fff;
+    padding: 30px 20px;
+    text-align: center;
+    font-size: 1rem;
+    border-top: 1px solid #ddd;
+  }
+
+  footer p {
+    margin: 8px 0;
+  }
+
+  .phone {
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: #4CAF50; /* зелененький */
+  }
+
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Project Shop</h1>
+  <p>1+1=3</p>
+</header>
+
+<main>
+  <div id="product-list"></div>
+</main>
+
+<footer>
+  <p>Звоните нам по телефону для заказа:</p>
+  <p class="phone">‪+7 (916) 742-77-54‬</p>
+  <p>Или напишите на почту:@gmail.com</p>
+</footer>
+
+<script>
+const products = [
+  {
+    id: 1,
+    name: "Боксерский шлем{СИНИЙ}",
+    description: "Боксерский шлем ",
+    price: 50,
+    details: "Надевается идеально на голову 15-18 летнего детеныша.",
+    image: "IMG_6298.JPG"
+  },
+  {
+    id: 2, 
+    name: "Хлеб",
+    description: "Свежий пшеничный хлеб",
+    price: 30,
+    details: "Испечён сегодня утром из муки высшего сорта без добавок.",
+    image: "IMG_6299.JPG"
+  },
+  {
+    id: 3,
+    name: "Молоко",
+    description: "1 литр молока",
+    price: 60,
+    details: "Свежесобранное от местных фермеров, 3.2% жирности.",
+    image: "IMG_6300.JPG"
+  },
+  {
+    id: 4,
+    name: "Яйца",
+    description: "10 штук куриных яиц",
+    price: 80,
+    details: "От кур свободного выгула. Категория: С1.",
+    image: "IMG_6306.JPG"
+  },
+  {
+    id: 5,
+    name: "Сыр",
+    description: "200 г твёрдого сыра",
+    price: 150,
+    details: "Твёрдый сыр с выдержкой 6 месяцев, насыщенный вкус и аромат.",
+    image: "IMG_6307.JPG"
+  },
+  {
+    id: 6,
+    name: "Мёд",
+    description: "Банка натурального мёда",
+    price: 250,
+    details: "Мёд из луговых трав, без добавок и нагревания.",
+    image: "IMG_6317.JPG"
+  },
+  {
+    id: 7,
+    name: "AydenWest",
+    description: "Tiktoker",
+    price: 250,
+    details: "Best.",
+    
+    image: "IMG_6319.JPG"
+  },
+  {
+    id: 8, 
+    name: "Raphinha", 
+    description: "Ballon d'or owner", price: "priceless", 
+    details: "2024/2025 legend.",
+    image: "IMG_6325.JPG" },
+  
+  {
+   
+    id: 9, name: "Апельсин", description: "Свежий апельсин", price: 40, details: "Выращено в солнечной Испании, очень сочный.", 
+    image: "IMG_6326.JPG"
+  },
+  {
+    id: 10, 
+    name: "Оливковое масло", 
+    description: "500 мл холодного отжима", 
+    price: 600,
+     details: "Экстра вирджин из Италии.", 
+    image: "IMG_6294.JPG" },
+  {
+    id: 11, 
+    name: "Оливковое масло", 
+    description: "500 мл холодного отжима", 
+    price: 600,
+     details: "Экстра вирджин из Италии.", 
+    image: "IMG_6305.JPG" 
+  },
+  {
+    id: 12, 
+    name: "Оливковое масло", 
+    description: "500 мл холодного отжима", 
+    price: 600,
+     details: "Экстра вирджин из Италии.", 
+    image: "IMG_6309.JPG" 
+  },
+  { id: 13,
+    name: "Оливковое масло", 
+    description: "500 мл холодного отжима",
+    price: 600, 
+    details: "Экстра вирджин из Италии.",
+    image: "IMG_6314.JPG" },
+  { id: 14,
+    name: "Оливковое масло", 
+    description: "500 мл холодного отжима", 
+    price: 600,
+    details: "Экстра вирджин из Италии.",
+    image: "IMG_6316.JPG" },
+    { id: 15, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "IMG_6318.JPG" }, 
+    { id: 16, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "IMG_6320.JPG" }, 
+    { id: 17, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "IMG_6324.jpg" }, 
+    { id: 18, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "IMG_6329.JPG" }, 
+    { id: 19, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "IMG_6331.JPG" }, 
+    { id: 20, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "IMG_6334.JPG" }, 
+    { id: 21, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "IMG_6335.JPG" }, 
+    { id: 22, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 23, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 24, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 25, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 26, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 27, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 28, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 29, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 30, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 31, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 32, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 33, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 34, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 35, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 36, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 37, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 38, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 39, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 40, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 41, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 42, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 43, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 44, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 45, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 46, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 47, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 48, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 49, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 50, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 51, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 52, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 53, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 54, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 55, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 56, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 57, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 58, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 59, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 60, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 61, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 62, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 63, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 64, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 65, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 66, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 67, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 68, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 69, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 70, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 71, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 72, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 73, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 74, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 75, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 76, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 77, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 78, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 79, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 80, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+    { id: 81, name: "Оливковое масло", description: "500 мл холодного отжима", price: 600, details: "Экстра вирджин из Италии.", image: "https://clck.ru/3Pcebk" }, 
+];
+
+const productListEl = document.getElementById("product-list");
+
+products.forEach(product => {
+  const productEl = document.createElement("div");
+  productEl.classList.add("product");
+  
+  productEl.innerHTML = `
+    <img src="${product.image}" alt="${product.name}">
+    <h2>${product.name}</h2>
+    <p>${product.description}</p>
+    <p class="price">${product.price} руб.</p>
+    <button type="button">Подробнее</button>
+    <div class="product-details">${product.details}</div>
+  `;
+
+  const btn = productEl.querySelector("button");
+  const details = productEl.querySelector(".product-details");
+
+  btn.addEventListener("click", () => {
+    const showDetails = !details.classList.contains("show");
+    if (showDetails) {
+      details.classList.add("show");
+      btn.textContent = "Скрыть";
+    } else {
+      details.classList.remove("show");
+      btn.textContent = "Подробнее";
+    }
+  });
+
+  productListEl.appendChild(productEl);
+});
+</script>
+
+</body>
+</html>
